@@ -11,8 +11,10 @@ import pyvisa
 
 rm = pyvisa.ResourceManager()
 # rm.timeout = 20000
-rm.list_resources()
-scope = rm.open_resource('USB0::0x1AB1::0x04CE::DS1ZD204101021::INSTR')
+# print(rm.list_resources())
+# scope = rm.open_resource('USB0::0x1AB1::0x04CE::DS1ZD204101021::INSTR')
+print(list(filter(lambda x: 'DS1ZD204101021' in x, rm.list_resources())))
+# scope = rm.open_resource('USB0::0x1AB1::0x0642::DG1ZA202603185::INSTR')
 # scope.write(':STOP')
 
 # scope.write(":WAV:MODE RAW")
@@ -46,9 +48,9 @@ scope = rm.open_resource('USB0::0x1AB1::0x04CE::DS1ZD204101021::INSTR')
 # # w.plot()
 # # plt.show()
 
-while True:
-    inp = input('command: ')
-    result = scope.write(inp)
+# while True:
+#     inp = input('command: ')
+#     result = scope.write(inp)
 # print(result)
 
 # from RsSmw import *
