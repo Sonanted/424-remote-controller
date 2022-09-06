@@ -2,7 +2,7 @@
 {% load widget_tweaks %}
 {% load static %}
 {% block title %}
-Осциллограф
+    Осциллограф
 {% endblock %}
 
 {% block url %}
@@ -63,11 +63,13 @@
         <button type="submit" id="submitButton" class="btn btn-success btn-lg">Отправить</button>
          </div>
 </form>
-<hr>
-<div class="container">
-    <h3>График</h3>
-    {{ graph|safe }}
-</div>
+    {% if graph %}
+        <hr>
+        <div class="container">
+            <h3>График</h3>
+            {{ graph|safe }}
+        </div>
+    {% endif %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 {% comment %} <script src="{% static 'js/todo.js' %}">
 </script> {% endcomment %}

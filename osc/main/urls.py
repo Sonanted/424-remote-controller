@@ -1,9 +1,9 @@
 from django.urls import path
-from .views import *
+from . import views
 urlpatterns = [
-    path('', home_page, name='home'),
-    path('oscilloscope/', Scope.as_view(), name='scope'),
-    path('login/', login_page, name='login'),
-    path('logout/', logout_page, name='logout'),
-    path('pass_reset', reset_page, name='password_reset'),
+    path('', views.home_page, name='home'),
+    path('oscilloscope/', views.Scope.as_view(), name='scope'),
+    path('login/', views.login_page, name='login'),
+    path('logout/', views.logout_page, name='logout'),
+    path('pass_reset', views.reset_page, name='password_reset'),
 ]

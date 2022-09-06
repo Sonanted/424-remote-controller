@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 SIGNAL_SOURCES = (
@@ -14,15 +15,39 @@ SIGNAL_FORMS = (
 
 
 class SignalGenerator(models.Model):
-    channel = models.CharField(max_length=20, choices=SIGNAL_SOURCES)
-    sig_form = models.CharField(max_length=20, choices=SIGNAL_FORMS)
-    frequency = models.CharField(max_length=20)
-    amplitude = models.CharField(max_length=20)
+    channel = models.FloatField(choices=SIGNAL_SOURCES)
+    sig_form = models.FloatField(choices=SIGNAL_FORMS)
+    frequency = models.FloatField(
+        default=10000,
+        validators=[
+            MinValueValidator(1000),
+            MaxValueValidator(100000)
+        ]
+    )
+    amplitude = models.FloatField(
+        default=12,
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(18)
+        ]
+    )
 
 
 class Oscilloscope(models.Model):
-    ch_scale = models.CharField(verbose_name='ch_scale', max_length=12, default="200m")
-    time_base = models.CharField(verbose_name='time_base', max_length=12, default="200u")
+    ch_scale = models.FloatField(
+        default=0.2,
+        validators=[
+            MinValueValidator(0.0001),
+            MaxValueValidator(1)
+        ]
+    )
+    time_base = models.FloatField(
+        default=0.0002,
+        validators=[
+            MinValueValidator(0.000001),
+            MaxValueValidator(0.1)
+        ]
+    )
 
 
     def __str__(self):

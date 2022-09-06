@@ -7,7 +7,6 @@ from django.views.generic import View
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
-from .tests import desktop_app_usage
 
 import pyvisa
 import matplotlib.pyplot as plot
@@ -23,9 +22,9 @@ from io import StringIO
 def mod_appliances(request):
     rm = pyvisa.ResourceManager()
     scope_usb = list(filter(lambda x: 'DS1ZD204101021' in x, rm.list_resources()))
-    # generator_usb = list(filter(lambda x: 'DS1ZD204101021' in x, rm.list_resources()))
+    generator_usb = list(filter(lambda x: 'DG1ZA202603185' in x, rm.list_resources()))
     scope = rm.open_resource(scope_usb[0])
-    generator = rm.open_resource('USB0::0x1AB1::0x0642::DG1ZA202603185::INSTR')
+    generator = rm.open_resource(generator_usb[0])
     print(f'{request["channel"]}:APPL:{request["sig_form"]} {request["frequency"]},{request["amplitude"]}')
     generator.write(f'{request["channel"]}:APPL:{request["sig_form"]} {request["frequency"]},{request["amplitude"]}')
     scope.write(":RUN")
@@ -65,7 +64,6 @@ def return_graph():
             start = (loopcount*250000)+1
             scope.write(":WAV:STAR {0}".format(start))
             stop = (loopcount+1)*250000
-            # print(stop) 
             scope.write(":WAV:STOP {0}".format(stop))
             rawdata.extend(scope.query_binary_values(":WAV:DATA?", datatype='B'))
             loopcount = loopcount+1
@@ -74,9 +72,6 @@ def return_graph():
     data = (numpy.asarray(rawdata) - YORigin - YREFerence) * YINCrement
     data_size = len(data)
     time = numpy.linspace(XREFerence, XINCrement * data_size, data_size)
-    # print(XREFerence)
-    # print(XINCrement)
-    # print(data_size)
     if (time[-1] < 1e-3):
         time = time * 1e6
         tUnit = "uS"
@@ -85,9 +80,6 @@ def return_graph():
         tUnit = "mS"
     else:
         tUnit = "S"
-    # print ('Data size:', data_size, "Sample rate:", sample_rate)
-    # print ('YORigin:', YORigin, 'YREFerence:', YREFerence, 'YINCrement:', YINCrement)
-    # print ('XORigin:', XORigin, 'XREFerence:', XREFerence, 'XINCrement:', XINCrement)
     fig = plot.figure()
     plot.plot(time, data)
     #plot.title("Oscilloscope Channel 1")
@@ -120,20 +112,14 @@ class Scope(View):
     def post(self, request):
         form = ScopeForm(request.POST)
         form2 = GeneratorForm(request.POST)
-        if form.is_valid() and form2.is_valid():
-            context = {
+        context = {
             'form': form,
             'form2': form2
             }
+        if form.is_valid() and form2.is_valid():
             mod_appliances(request.POST)
             context['graph'] = return_graph()
-            return render(request, 'main/scope.html', context=context)
-            # return JsonResponse({'url': "{% static 'main/" + filename + ".png' %}"}, status=200)
-        else:
-            print('Not valid')
-            print(form.cleaned_data)
-            print(form2.cleaned_data)
-            return redirect('scope')
+        return render(request, 'main/scope.html', context=context)
 
 
 def login_page(request):
