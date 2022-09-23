@@ -25,7 +25,6 @@ def mod_appliances(request):
     generator_usb = list(filter(lambda x: 'DG1ZA202603185' in x, rm.list_resources()))
     scope = rm.open_resource(scope_usb[0])
     generator = rm.open_resource(generator_usb[0])
-    print(f'{request["channel"]}:APPL:{request["sig_form"]} {request["frequency"]},{request["amplitude"]}')
     generator.write(f'{request["channel"]}:APPL:{request["sig_form"]} {request["frequency"]},{request["amplitude"]}')
     scope.write(":RUN")
     scope.write(f':TIMebase:SCALe {request["time_base"]}')
@@ -82,7 +81,6 @@ def return_graph():
         tUnit = "S"
     fig = plot.figure()
     plot.plot(time, data)
-    #plot.title("Oscilloscope Channel 1")
     plot.ylabel("Voltage (V)")
     plot.xlabel("Time (" + tUnit + ")")
     plot.grid()
@@ -101,6 +99,7 @@ def home_page(request):
 
 class Scope(View):
     def get(self, request):
+        print('get')
         form = ScopeForm()
         form2 = GeneratorForm()
         context = {
@@ -110,6 +109,7 @@ class Scope(View):
         return render(request, 'main/scope.html', context=context)
 
     def post(self, request):
+        print('post')
         form = ScopeForm(request.POST)
         form2 = GeneratorForm(request.POST)
         context = {

@@ -8,15 +8,15 @@ SIGNAL_SOURCES = (
 )
 
 SIGNAL_FORMS = (
-    ('SIN', 'Синусоида'),
+    ('SIN', 'Гармонический'),
     ('SQU', 'Меандр'),
     ('RAMP', 'Треугольный')
 )
 
 
 class SignalGenerator(models.Model):
-    channel = models.FloatField(choices=SIGNAL_SOURCES)
-    sig_form = models.FloatField(choices=SIGNAL_FORMS)
+    channel = models.CharField(max_length=50, choices=SIGNAL_SOURCES)
+    sig_form = models.CharField(max_length=50, choices=SIGNAL_FORMS)
     frequency = models.FloatField(
         default=10000,
         validators=[
